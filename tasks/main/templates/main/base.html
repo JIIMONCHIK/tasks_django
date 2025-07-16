@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <a href="/" class="logo">
+                    <div class="logo-icon">✓</div>
+                    <span>TaskFlow</span>
+                </a>
+            </div>
+
+            <nav>
+                <ul class="nav-links">
+                    <li class="nav-link"><a href="#" class="active">Задачи</a></li>
+                    <li class="nav-link"><a href="#">Проекты</a></li>
+                    <li class="nav-link"><a href="#">Категории</a></li>
+                    <li class="nav-link"><a href="#">Календарь</a></li>
+                    <li class="nav-link"><a href="#">Отчеты</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Поиск задач...">
+                </div>
+
+                <button class="btn btn-primary">+ Новая задача</button>
+
+                <div class="user-profile">
+                    <div class="avatar">АИ</div>
+                    <span class="username">Алексей Иванов</span>
+                    <div class="dropdown">
+                        <a href="#">Мой профиль</a>
+                        <a href="#">Настройки</a>
+                        <a href="#">Уведомления</a>
+                        <a href="#">Выйти</a>
+                    </div>
+                </div>
+
+                <button class="mobile-menu-btn">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <a href="{% url 'index' %}"></a>
+    <a href="{% url 'home' %}"></a>
+    {% block content %}{% endblock %}
+</body>
+</html>
