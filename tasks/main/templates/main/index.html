@@ -1,10 +1,20 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-Main
+{{ title }}
 {% endblock %}
 
 {% block content %}
-<h1>tasdfasdfasota</h1>
-<h2>asdfasdfadfta</h2>
+    <h1>tasdfasdfasota</h1>
+    {% if priorities %}
+        {% for el in priorities %}
+            <div>
+                <h3>{{ el.name }}</h3>
+                <p>{{ el.weight }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No data!&!</p>
+    {% endif %}
+    <h2>asdfasdfadfta</h2>
 {% endblock %}

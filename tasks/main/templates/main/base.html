@@ -50,8 +50,10 @@
         </div>
     </header>
 
-    <a href="{% url 'index' %}"></a>
-    <a href="{% url 'home' %}"></a>
+
+    <a href="{% url 'index' %}">index</a>
+    <a href="{% url 'home' %}">home</a>
+    <a href="{% url 'create' %}">create</a>
     {% block content %}{% endblock %}
 </body>
 </html>
