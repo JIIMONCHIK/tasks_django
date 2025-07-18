@@ -10,29 +10,29 @@
     <header>
         <div class="header-container">
             <div class="logo-section">
-                <a href="/" class="logo">
+                <a href="{% url 'index' %}" class="logo">
                     <div class="logo-icon">✓</div>
-                    <span>TaskFlow</span>
+                    <span class="logo-text">TaskFlow</span>
                 </a>
             </div>
 
             <nav>
                 <ul class="nav-links">
                     <li class="nav-link"><a href="#" class="active">Задачи</a></li>
-                    <li class="nav-link"><a href="#">Проекты</a></li>
                     <li class="nav-link"><a href="#">Категории</a></li>
                     <li class="nav-link"><a href="#">Календарь</a></li>
-                    <li class="nav-link"><a href="#">Отчеты</a></li>
                 </ul>
             </nav>
 
             <div class="header-actions">
+                <a href="{% url 'create' %}">
+                    <button class="btn btn-primary">+ Новая задача</button>
+                </a>
+
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
                     <input type="text" placeholder="Поиск задач...">
                 </div>
-
-                <button class="btn btn-primary">+ Новая задача</button>
 
                 <div class="user-profile">
                     <div class="avatar">АИ</div>
@@ -50,10 +50,6 @@
         </div>
     </header>
 
-
-    <a href="{% url 'index' %}">index</a>
-    <a href="{% url 'home' %}">home</a>
-    <a href="{% url 'create' %}">create</a>
     {% block content %}{% endblock %}
 </body>
 </html>

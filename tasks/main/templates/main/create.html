@@ -1,17 +1,67 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block title %}
-Создать таск
+{{ title }}
 {% endblock %}
 
 {% block content %}
-    <h1>Создай</h1>
+<script src="{% static 'main/js/task_form.js' %}"></script>
+<div class="task-form">
+    <h1 class="text-center mb-4">Создать новую задачу</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.title }}
-        {{ form.description }}<br>
-        {{ form.due_date }}<br>
-        <button type="submit">Добавить</button>
-        <span>{{ error }}</span>
+
+        <div class="form-group">
+            {{ form.title }}
+            {{ form.title.errors }}
+        </div>
+
+        <div class="form-group">
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        <div class="date-section">
+            <div class="date-group">
+                <div class="form-group">
+                    <label class="form-label">Дата начала</label>
+                    <div class="date-fields">
+                        {{ form.start_date }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Срок выполнения</label>
+                    <div class="date-fields">
+                        {{ form.due_date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="select-group">
+            <div class="form-group">
+                {{ form.priority }}
+                {{ form.priority.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.status }}
+                {{ form.status.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.category }}
+                {{ form.category.errors }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Создать задачу</button>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
     </form>
+</div>
 {% endblock %}
