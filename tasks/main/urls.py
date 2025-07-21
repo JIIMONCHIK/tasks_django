@@ -21,5 +21,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('home', views.home, name='home'),
     path('create', views.create, name='create'),
+    path('login', views.login_view, name='login'),
+    path('logout', views.logout_view, name='logout'),
+    path('register', views.register_view, name='register'),
     path('favicon.ico', views.favicon_view),
 ]

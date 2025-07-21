@@ -34,16 +34,22 @@
                     <input type="text" placeholder="Поиск задач...">
                 </div>
 
+                {% if user.is_authenticated %}
                 <div class="user-profile">
-                    <div class="avatar">АИ</div>
-                    <span class="username">Алексей Иванов</span>
+                    <div class="avatar">{{ user.username|first }}</div>
+                    <span class="username">{{ user.username }}</span>
                     <div class="dropdown">
-                        <a href="#">Мой профиль</a>
-                        <a href="#">Настройки</a>
-                        <a href="#">Уведомления</a>
-                        <a href="#">Выйти</a>
+                        <a href="#">Профиль</a>
+                        <a href="{% url 'logout' %}">Выйти</a>
                     </div>
                 </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="btn btn-primary">Войти</button>
+                    </a>
+                </div>
+                {% endif %}
 
                 <button class="mobile-menu-btn">☰</button>
             </div>

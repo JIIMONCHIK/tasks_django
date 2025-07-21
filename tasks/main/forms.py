@@ -1,36 +1,71 @@
-from .models import Tasks, Priorities, Statuses, Categories
-from django.forms import ModelForm, TextInput, Textarea, SelectDateWidget, Select
+from .models import Tasks, Priorities, Statuses, Categories, Users
+from django import forms as f
+from django.contrib.auth.forms import AuthenticationForm
 
 
-class TaskForm(ModelForm):
+class UserRegistrationForm(f.ModelForm):
+    password = f.CharField(widget=f.PasswordInput)
+    password_confirm = f.CharField(widget=f.PasswordInput, label='Confirm Password')
+
+    class Meta:
+        model = Users
+        fields = ['username', 'email', 'password']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password and password_confirm and password != password_confirm:
+            self.add_error('password_confirm', "Passwords do not match")
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
+
+
+class UserLoginForm(AuthenticationForm):
+    username = f.CharField(label='Email')  # Используем email для входа
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password'].widget = f.PasswordInput()
+
+
+class TaskForm(f.ModelForm):
     class Meta:
         model = Tasks
         fields = ["title", "description", "start_date", "due_date", "priority", "status", "category"]
         widgets = {
-            "title": TextInput(attrs={
+            "title": f.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "Название задачи"
             }),
-            "description": Textarea(attrs={
+            "description": f.Textarea(attrs={
                 "class": "form-control",
                 "placeholder": "Подробное описание задачи",
                 "rows": 4
             }),
-            "start_date": SelectDateWidget(attrs={
+            "start_date": f.SelectDateWidget(attrs={
                 "class": "form-control date-field",
                 "placeholder": "Дата начала"
             }),
-            "due_date": SelectDateWidget(attrs={
+            "due_date": f.SelectDateWidget(attrs={
                 "class": "form-control date-field",
                 "placeholder": "Срок выполнения"
             }),
-            "priority": Select(attrs={
+            "priority": f.Select(attrs={
                 "class": "form-control"
             }),
-            "status": Select(attrs={
+            "status": f.Select(attrs={
                 "class": "form-control"
             }),
-            "category": Select(attrs={
+            "category": f.Select(attrs={
                 "class": "form-control"
             }),
         }

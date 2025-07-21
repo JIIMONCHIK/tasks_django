@@ -1,8 +1,47 @@
+import datetime
+
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+
+class UsersManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email must be set')
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, email, password, **extra_fields)
+
+
+class Users(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(unique=True, max_length=50)
+    email = models.CharField(unique=True, max_length=100)
+    password = models.TextField(null=False)
+    created_at = models.DateTimeField(blank=True, null=True, default=datetime.datetime.now())
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    objects = UsersManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        db_table = 'users'
 
 
 class Categories(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(Users, models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=50)
     color_code = models.CharField(max_length=7, blank=True, null=True)
 
@@ -37,7 +76,7 @@ class Statuses(models.Model):
 
 
 class Tasks(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING)
+    user = models.ForeignKey(Users, models.DO_NOTHING)
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     due_date = models.DateTimeField(blank=True, null=True)
@@ -46,15 +85,8 @@ class Tasks(models.Model):
     status = models.ForeignKey(Statuses, models.DO_NOTHING, blank=True, null=True)
     category = models.ForeignKey(Categories, models.DO_NOTHING, blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         db_table = 'tasks'
-
-
-class Users(models.Model):
-    username = models.CharField(unique=True, max_length=50)
-    email = models.CharField(unique=True, max_length=100)
-    password_hash = models.TextField()
-    created_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'users'
