@@ -114,7 +114,7 @@ header {
 }
 
 .search-bar input {
-    padding: 10px 15px 10px 40px;
+    padding: 10px 15px 10px 25px;
     border-radius: 30px;
     border: none;
     background: rgba(255, 255, 255, 0.2);
@@ -264,7 +264,7 @@ header {
 }
 
 .task-form {
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto;
     padding: 2rem;
     background: white;

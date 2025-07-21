@@ -1,0 +1,25 @@
+.error-field {
+    border: 2px solid #ff0000 !important;
+}
+.error-message {
+    color: #ff0000;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+.alert-danger {
+    color: #ff0000;
+    background-color: #ffeeee;
+    border: 1px solid #ff0000;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.error-box {
+    color: #ff0000;
+    background-color: #ffeeee;
+    border: 1px solid #ff0000;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}

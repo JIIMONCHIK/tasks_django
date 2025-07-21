@@ -92,3 +92,22 @@ class TaskForm(f.ModelForm):
         for field in self.fields:
             if self.errors.get(field):
                 self.fields[field].widget.attrs['class'] += 'error-field'
+
+
+class CategoryForm(f.Form):
+    name = f.CharField(
+        max_length=50,
+        widget=f.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Название категории"
+        })
+    )
+    color_code = f.CharField(
+        max_length=7,
+        required=False,
+        widget=f.TextInput(attrs={
+            "class": "form-control",
+            "type": "color",
+            "value": "#3a86ff"
+        })
+    )

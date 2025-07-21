@@ -3,6 +3,7 @@ from .models import *
 from .forms import TaskForm, UserRegistrationForm, UserLoginForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 def register_view(request):
@@ -78,6 +79,35 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+
+@login_required(login_url='login')
+def create_category(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        color_code = request.POST.get('color_code', '#ffffff')  # Белый по умолчанию
+
+        # Проверяем, что категория с таким именем у пользователя не существует
+        if Categories.objects.filter(user=request.user, name=name).exists():
+            return JsonResponse({
+                'success': False,
+                'error': 'Категория с таким именем уже существует'
+            })
+
+        # Создаем новую категорию
+        category = Categories.objects.create(
+            user=request.user,
+            name=name,
+            color_code=color_code
+        )
+
+        return JsonResponse({
+            'success': True,
+            'id': category.id,
+            'name': category.name
+        })
+
+    return JsonResponse({'success': False, 'error': 'Неверный запрос'})
 
 
 @login_required(login_url='login')

@@ -58,3 +58,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+document.addEventListener('click', function(event) {
+    const categoryPanel = document.getElementById('category-panel');
+    const btnAddCategory = document.getElementById('btn-add-category');
+
+    if (categoryPanel && categoryPanel.style.display === 'block') {
+        const isClickInsidePanel = categoryPanel.contains(event.target);
+        const isClickOnAddButton = btnAddCategory.contains(event.target);
+
+        if (!isClickInsidePanel && !isClickOnAddButton) {
+            categoryPanel.style.display = 'none';
+        }
+    }
+});
