@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import *
 from .forms import TaskForm, UserRegistrationForm, UserLoginForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Case, When, Value, BooleanField
+import json
 
 
 def register_view(request):
@@ -143,8 +145,101 @@ def index(request):
 
 
 @login_required(login_url='login')
-def home(request):
-    return render(request, 'main/home.html')
+def tasks_view(request):
+    # Получаем параметр сортировки
+    sort_by = request.GET.get('sort', 'due_date')
+
+    # Получаем задачи текущего пользователя
+    tasks = Tasks.objects.filter(user=request.user)
+
+    # Применяем сортировку
+    if sort_by == 'due_date':
+        tasks = tasks.order_by('due_date')  # Сначала ближайшие сроки
+    elif sort_by == 'created':
+        tasks = tasks.order_by('-start_date')  # Последние созданные
+    elif sort_by == 'status':
+        # Сначала незавершенные, потом завершенные
+        tasks = tasks.annotate(
+            is_completed=Case(
+                When(status__is_completed=True, then=Value(1)),
+                default=Value(0),
+                output_field=BooleanField()
+            )
+        ).order_by('is_completed', '-start_date')
+    elif sort_by == 'priority':
+        tasks = tasks.order_by('-priority__weight')  # По важности приоритета
+    elif sort_by == 'category':
+        tasks = tasks.order_by('category__name')
+
+    # Получаем все категории пользователя для фильтрации
+    categories = Categories.objects.filter(user=request.user)
+
+    context = {
+        'title': 'Мои задачи',
+        'tasks': tasks,
+        'categories': categories,
+        'sort_by': sort_by,
+        'statuses': Statuses.objects.all(),
+        'priorities': Priorities.objects.all()
+    }
+    return render(request, 'main/tasks.html', context)
+
+
+@login_required
+def get_task(request, task_id):
+    task = get_object_or_404(Tasks, id=task_id, user=request.user)
+
+    return JsonResponse({
+        'title': task.title,
+        'description': task.description,
+        'due_date': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
+        'category_id': task.category.id if task.category else None,
+        'priority_id': task.priority.id if task.priority else None,
+        'status_id': task.status.id if task.status else None
+    })
+
+
+@login_required(login_url='login')
+def update_task(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task_id = data.get('task_id')
+            task = get_object_or_404(Tasks, id=task_id, user=request.user)
+
+            # Обновляем поля
+            task.title = data.get('title', task.title)
+            task.description = data.get('description', task.description)
+
+            due_date = data.get('due_date')
+            task.due_date = due_date if due_date else None
+
+            category_id = data.get('category')
+            task.category = Categories.objects.get(id=category_id) if category_id else None
+
+            priority_id = data.get('priority')
+            if priority_id:
+                task.priority = Priorities.objects.get(id=priority_id)
+
+            status_id = data.get('status')
+            if status_id:
+                task.status = Statuses.objects.get(id=status_id)
+
+            task.save()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False})
+
+
+@login_required(login_url='login')
+def delete_task(request, task_id):
+    if request.method == 'DELETE':
+        task = get_object_or_404(Tasks, id=task_id, user=request.user)
+        task.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 def favicon_view(request):

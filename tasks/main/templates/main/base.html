@@ -18,7 +18,7 @@
 
             <nav>
                 <ul class="nav-links">
-                    <li class="nav-link"><a href="#" class="active">Задачи</a></li>
+                    <li class="nav-link"><a href="{% url 'tasks' %}" class="{% if request.resolver_match.url_name == 'tasks' %}active{% endif %}">Задачи</a></li>
                     <li class="nav-link"><a href="#">Категории</a></li>
                     <li class="nav-link"><a href="#">Календарь</a></li>
                 </ul>
@@ -30,7 +30,6 @@
                 </a>
 
                 <div class="search-bar">
-<!--                    <span class="search-icon">🔍</span>-->
                     <input type="text" placeholder="🔍 Поиск задач...">
                 </div>
 

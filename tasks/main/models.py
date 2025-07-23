@@ -88,5 +88,9 @@ class Tasks(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def is_completed(self):
+        return self.status.is_completed if self.status else False
+
     class Meta:
         db_table = 'tasks'

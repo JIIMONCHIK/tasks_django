@@ -19,11 +19,14 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('home', views.home, name='home'),
+    path('tasks', views.tasks_view, name='tasks'),
     path('create', views.create, name='create'),
     path('login', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
     path('register', views.register_view, name='register'),
     path('create-category', views.create_category, name='create_category'),
+    path('get-task/<int:task_id>/', views.get_task, name='get_task'),
+    path('update-task/', views.update_task, name='update_task'),
+    path('delete-task/<int:task_id>/', views.delete_task, name='delete_task'),
     path('favicon.ico', views.favicon_view),
 ]
