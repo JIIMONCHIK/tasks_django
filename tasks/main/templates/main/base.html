@@ -19,7 +19,7 @@
             <nav>
                 <ul class="nav-links">
                     <li class="nav-link"><a href="{% url 'tasks' %}" class="{% if request.resolver_match.url_name == 'tasks' %}active{% endif %}">Задачи</a></li>
-                    <li class="nav-link"><a href="#">Категории</a></li>
+                    <li class="nav-link"><a href="{% url 'categories' %}" class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}">Категории</a></li>
                     <li class="nav-link"><a href="#">Календарь</a></li>
                 </ul>
             </nav>

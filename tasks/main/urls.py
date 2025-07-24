@@ -20,6 +20,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('tasks', views.tasks_view, name='tasks'),
+    path('categories', views.categories_view, name='categories'),
     path('create', views.create, name='create'),
     path('login', views.login_view, name='login'),
     path('logout', views.logout_view, name='logout'),
@@ -28,5 +29,8 @@ urlpatterns = [
     path('get-task/<int:task_id>/', views.get_task, name='get_task'),
     path('update-task/', views.update_task, name='update_task'),
     path('delete-task/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('get-category/<int:category_id>/', views.get_category, name='get_category'),
+    path('update-category/', views.update_category, name='update_category'),
+    path('delete-category/<int:category_id>/', views.delete_category, name='delete_category'),
     path('favicon.ico', views.favicon_view),
 ]

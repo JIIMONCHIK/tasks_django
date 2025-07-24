@@ -48,6 +48,10 @@ class Categories(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def tasks_count(self):
+        return self.tasks_set.count()
+
     class Meta:
         db_table = 'categories'
         unique_together = (('user', 'name'),)

@@ -89,6 +89,12 @@ def create_category(request):
         name = request.POST.get('name')
         color_code = request.POST.get('color_code', '#ffffff')  # Белый по умолчанию
 
+        if not name:
+            return JsonResponse({
+                'success': False,
+                'error': 'Название категории обязательно'
+            })
+
         # Проверяем, что категория с таким именем у пользователя не существует
         if Categories.objects.filter(user=request.user, name=name).exists():
             return JsonResponse({
@@ -106,10 +112,61 @@ def create_category(request):
         return JsonResponse({
             'success': True,
             'id': category.id,
-            'name': category.name
+            'name': category.name,
+            'color_code': category.color_code
         })
 
     return JsonResponse({'success': False, 'error': 'Неверный запрос'})
+
+
+@login_required
+def get_category(request, category_id):
+    category = get_object_or_404(Categories, id=category_id, user=request.user)
+    return JsonResponse({
+        'name': category.name,
+        'color_code': category.color_code
+    })
+
+
+@login_required(login_url='login')
+def update_category(request):
+    if request.method == 'POST':
+        try:
+            # Используем request.POST вместо request.body
+            category_id = request.POST.get('category_id')
+            name = request.POST.get('name')
+            color_code = request.POST.get('color_code')
+
+            if not name:
+                return JsonResponse({'success': False, 'error': 'Название обязательно'})
+
+            category = get_object_or_404(Categories, id=category_id, user=request.user)
+
+            # Проверяем уникальность имени (кроме текущей категории)
+            if Categories.objects.filter(user=request.user, name=name).exclude(id=category_id).exists():
+                return JsonResponse({'success': False, 'error': 'Категория с таким именем уже существует'})
+
+            category.name = name
+            category.color_code = color_code
+            category.save()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def delete_category(request, category_id):
+    if request.method == 'DELETE':
+        category = get_object_or_404(Categories, id=category_id, user=request.user)
+
+        # Переносим задачи в "Без категории"
+        Tasks.objects.filter(category=category).update(category=None)
+
+        category.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 @login_required(login_url='login')
@@ -121,7 +178,7 @@ def create(request):
             task = form.save(commit=False)
             task.user = request.user
             task.save()
-            return redirect('index')
+            return redirect('tasks')
         else:
             error = 'Ошибка в форме'
     else:
@@ -269,6 +326,17 @@ def delete_task(request, task_id):
         task.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
+
+@login_required(login_url='login')
+def categories_view(request):
+    categories = Categories.objects.filter(user=request.user)
+
+    context = {
+        'title': 'Мои категории',
+        'categories': categories
+    }
+    return render(request, 'main/categories.html', context)
 
 
 def favicon_view(request):
