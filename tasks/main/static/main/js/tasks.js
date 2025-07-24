@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const colorPicker = document.querySelector('.color-picker');
     const colorPreview = document.getElementById('color-preview');
 
+    const filterTypes = ['category', 'priority', 'status'];
+
+    initFiltersFromUrl(); // Инициализируем чекбоксы
+    updateFilterIndicator();
+
     if (colorPicker && colorPreview) {
         colorPreview.style.backgroundColor = colorPicker.value;
 
@@ -180,24 +185,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Применить фильтры
+   // Модифицированный обработчик для применения фильтров
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', function() {
-            // Здесь будет логика применения фильтров
+            const url = new URL(window.location.href);
+
+            // Удаляем старые параметры фильтрации и страницы
+            filterTypes.forEach(type => url.searchParams.delete(type));
+            url.searchParams.delete('page');
+
+            // Собираем новые параметры
+            filterTypes.forEach(type => {
+                const checkboxes = filterDropdown.querySelectorAll(`input[name="filter_${type}"]:checked`);
+                const values = Array.from(checkboxes).map(cb => cb.value);
+                if (values.length > 0) {
+                    url.searchParams.set(type, values.join(','));
+                }
+            });
+
+            applyFiltersBtn.textContent = 'Применяем...';
+            applyFiltersBtn.disabled = true;
             filterDropdown.style.display = 'none';
-            alert('Фильтры применены! В реальном приложении здесь будет AJAX запрос');
+            window.location.href = url.toString();
         });
     }
 
-    // Сбросить фильтры
+    // Модифицированный обработчик для сброса фильтров
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', function() {
             const checkboxes = filterDropdown.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+
+            const url = new URL(window.location.href);
+
+            // Удаляем параметры фильтрации и страницы
+            filterTypes.forEach(type => url.searchParams.delete(type));
+            url.searchParams.delete('page');
+
+            filterDropdown.style.display = 'none';
+            window.location.href = url.toString();
         });
     }
+
 
     // Открыть модальное окно при клике на карточку
     const taskCards = document.querySelectorAll('.task-card');
@@ -315,5 +344,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error fetching task data:', error);
                 alert('Ошибка при загрузке данных задачи');
             });
+    }
+
+    // Функция инициализации фильтров из URL
+    function initFiltersFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        filterTypes.forEach(type => {
+            const paramValue = urlParams.get(type);
+            if (paramValue) {
+                const values = paramValue.split(',');
+                values.forEach(val => {
+                    const checkbox = filterDropdown.querySelector(`input[name="filter_${type}"][value="${val}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        });
+    }
+
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            const url = new URL(window.location.href);
+            filterTypes.forEach(type => url.searchParams.delete(type));
+            window.location.href = url.toString();
+        });
+    }
+
+    function updateFilterIndicator() {
+        const hasActiveFilters = filterTypes.some(type => {
+            return filterDropdown.querySelectorAll(`input[name="filter_${type}"]:checked`).length > 0;
+        });
+
+        filterBtn.classList.toggle('active', hasActiveFilters);
     }
 });

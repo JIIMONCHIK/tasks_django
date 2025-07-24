@@ -104,7 +104,7 @@
 }
 
 .task-completed {
-    opacity: 0.7;
+    opacity: 0.6;
     background-color: #f8f9fa;
 }
 
@@ -117,25 +117,22 @@
 .task-header {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.task-header h3 {
-    margin: 0;
-    font-size: 18px;
-    flex: 1;
-}
-
-.task-meta {
+.task-header > div {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
     gap: 5px;
 }
 
 .task-date {
     font-size: 12px;
     color: #6c757d;
+    order: 1; /* Дата всегда будет под заголовком */
 }
 
 .task-category {
@@ -143,6 +140,8 @@
     padding: 3px 8px;
     border-radius: 12px;
     border: 1px solid;
+    align-self: flex-start;
+    margin-top: 2px;
 }
 
 .task-body p {
@@ -446,4 +445,10 @@
 .form-group {
     margin-bottom: 1rem;
     margin-top: 1rem;
+}
+
+.filter-btn.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
 }

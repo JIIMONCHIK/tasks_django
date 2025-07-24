@@ -32,7 +32,7 @@
                         <h4>Статус</h4>
                         {% for status in statuses %}
                         <label>
-                            <input type="checkbox" name="status" value="{{ status.id }}">
+                            <input type="checkbox" name="filter_status" value="{{ status.id }}">
                             {{ status.name }}
                         </label>
                         {% endfor %}
@@ -41,7 +41,7 @@
                         <h4>Приоритет</h4>
                         {% for priority in priorities %}
                         <label>
-                            <input type="checkbox" name="priority" value="{{ priority.id }}">
+                            <input type="checkbox" name="filter_priority" value="{{ priority.id }}">
                             {{ priority.name }}
                         </label>
                         {% endfor %}
@@ -50,7 +50,7 @@
                         <h4>Категория</h4>
                         {% for category in categories %}
                         <label>
-                            <input type="checkbox" name="category" value="{{ category.id }}">
+                            <input type="checkbox" name="filter_category" value="{{ category.id }}">
                             <span class="color-dot" style="background-color: {{ category.color_code }}"></span>
                             {{ category.name }}
                         </label>
@@ -72,15 +72,15 @@
              style="border-left: 5px solid {% if task.category %}{{ task.category.color_code }}{% else %}#f0f0f0{% endif %};"
              data-task-id="{{ task.id }}">
             <div class="task-header">
-                <h3>{{ task.title }}</h3>
-                <div class="task-meta">
+                <div>
+                    <h3>{{ task.title }}</h3>
                     <span class="task-date">{{ task.start_date|date:"d M Y" }}</span>
-                    {% if task.category %}
-                    <span class="task-category" style="background-color: {{ task.category.color_code }}20; border-color: {{ task.category.color_code }}">
-                        {{ task.category.name }}
-                    </span>
-                    {% endif %}
                 </div>
+                {% if task.category %}
+                <span class="task-category" style="background-color: {{ task.category.color_code }}20; border-color: {{ task.category.color_code }}">
+                    {{ task.category.name }}
+                </span>
+                {% endif %}
             </div>
             
             <div class="task-body">
@@ -115,12 +115,19 @@
             </div>
         </div>
         {% empty %}
-        <div class="no-tasks">
-            <p>У вас пока нет задач. Создайте первую!</p>
-            <a href="{% url 'create' %}" class="btn btn-primary">
-                Создать задачу
-            </a>
-        </div>
+            <div class="no-tasks">
+                {% if has_tasks %}
+                    <p>Ни одна задача не соответствует выбранным фильтрам.</p>
+                    <button class="btn btn-link" id="clear-filters-btn">Сбросить фильтры</button>
+                {% else %}
+                    <p>У вас пока нет задач. Создайте первую!</p>
+                    <a href="{% url 'create' %}" class="btn btn-primary">
+                        Создать задачу
+                    </a>
+                {% endif %}
+            </div>
+
+
         {% endfor %}
     </div>
 </div>

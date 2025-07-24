@@ -4,7 +4,7 @@ from .forms import TaskForm, UserRegistrationForm, UserLoginForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.db.models import Case, When, Value, BooleanField
+from django.db.models import Case, When, Value, BooleanField, Q
 import json
 
 
@@ -152,6 +152,31 @@ def tasks_view(request):
     # Получаем задачи текущего пользователя
     tasks = Tasks.objects.filter(user=request.user)
 
+    # Применяем фильтрацию если есть соответствующие параметры
+    # Фильтр по категориям
+    if 'category' in request.GET:
+        category_ids = [int(cid) for cid in request.GET['category'].split(',') if cid]
+        if 'category' in request.GET:
+            valid_ids = Categories.objects.filter(
+                id__in=category_ids,
+                user=request.user
+            ).values_list('id', flat=True)
+
+            tasks = tasks.filter(
+                Q(category_id__in=valid_ids) |
+                Q(category__isnull=True) & Q(category_id__in=category_ids)
+            )
+
+    # Фильтр по приоритетам
+    if 'priority' in request.GET:
+        priority_ids = [int(pid) for pid in request.GET['priority'].split(',') if pid]
+        tasks = tasks.filter(priority_id__in=priority_ids)
+
+    # Фильтр по статусам
+    if 'status' in request.GET:
+        status_ids = [int(sid) for sid in request.GET['status'].split(',') if sid]
+        tasks = tasks.filter(status_id__in=status_ids)
+
     # Применяем сортировку
     if sort_by == 'due_date':
         tasks = tasks.order_by('due_date')  # Сначала ближайшие сроки
@@ -160,27 +185,31 @@ def tasks_view(request):
     elif sort_by == 'status':
         # Сначала незавершенные, потом завершенные
         tasks = tasks.annotate(
-            is_completed=Case(
+            completed_flag=Case(
                 When(status__is_completed=True, then=Value(1)),
                 default=Value(0),
                 output_field=BooleanField()
             )
-        ).order_by('is_completed', '-start_date')
+        ).order_by('completed_flag', '-start_date')
     elif sort_by == 'priority':
         tasks = tasks.order_by('-priority__weight')  # По важности приоритета
     elif sort_by == 'category':
         tasks = tasks.order_by('category__name')
 
-    # Получаем все категории пользователя для фильтрации
+    # Получаем все сущности для фильтров
     categories = Categories.objects.filter(user=request.user)
+    priorities = Priorities.objects.all()
+    statuses = Statuses.objects.all()
+    has_tasks = Tasks.objects.filter(user=request.user).exists()
 
     context = {
         'title': 'Мои задачи',
         'tasks': tasks,
         'categories': categories,
         'sort_by': sort_by,
-        'statuses': Statuses.objects.all(),
-        'priorities': Priorities.objects.all()
+        'statuses': statuses,
+        'priorities': priorities,
+        'has_tasks': has_tasks
     }
     return render(request, 'main/tasks.html', context)
 
