@@ -149,14 +149,19 @@
                 <input type="date" name="due_date" id="task-due-date" class="form-control">
             </div>
             
-            <div class="form-group">
+            <div class="form-group category-group">
                 <label>Категория</label>
-                <select name="category" id="task-category" class="form-control">
-                    <option value="">Без категории</option>
-                    {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
+                <div class="category-select-container">
+                    <select name="category" id="task-category" class="form-control">
+                        <option value="">Без категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn-add-category" id="btn-add-category">
+                            +
+                        </button>
+                </div>
             </div>
             
             <div class="form-group">
@@ -181,6 +186,33 @@
                 <button type="submit" class="btn btn-primary">Сохранить</button>
                 <button type="button" class="btn btn-danger" id="delete-task">Удалить</button>
             </div>
+        </form>
+    </div>
+
+    <!-- Панель создания категории -->
+    <div class="category-panel" id="category-panel">
+        <div class="category-panel-header">
+            <h3>Создать новую категорию</h3>
+            <button type="button" class="btn-close-panel" id="btn-close-panel">
+                Закрыть
+            </button>
+        </div>
+        <form id="category-form">
+            <div class="form-group">
+                <label>Название категории</label>
+                <input type="text" name="name" class="form-control" placeholder="Работа, Дом, Учеба..." required>
+                <div class="error-message" id="name-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Цвет</label>
+                <div class="color-picker-container">
+                    <input type="color" name="color_code" class="form-control color-picker" value="#3a86ff">
+                    <span class="color-preview" id="color-preview"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-create-category">Создать категорию</button>
         </form>
     </div>
 </div>

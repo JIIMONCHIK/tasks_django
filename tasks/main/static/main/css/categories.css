@@ -83,13 +83,12 @@
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    color: #6c757d;
+    color: #ff0000;
     transition: transform 0.2s ease, color 0.2s;
 }
 
 .btn-close-panel:hover {
     color: #495057;
-    transform: rotate(90deg);
 }
 
 .category-select-container {

@@ -281,3 +281,169 @@
     color: red;
     background-color: #ffaeae;
 }
+
+.task-form-container {
+    display: flex;
+    gap: 0  px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.task-form {
+    flex: 1;
+    max-width: 1200px;
+}
+
+.category-panel {
+    flex: 0 0 350px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+    /* Начальное положение - за пределами экрана */
+    position: absolute;
+    right: -400px; /* Скрываем панель справа */
+    top: 0;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                box-shadow 0.3s ease;
+    transform: translateX(0);
+    z-index: 100;
+}
+
+.category-panel.active {
+    transform: translateX(-400px); /* Сдвигаем панель на 400px влево */
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(0); }
+    to { transform: translateX(-400px); }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(-400px); }
+    to { transform: translateX(0); }
+}
+
+.category-panel.slide-in {
+    animation: slideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.category-panel.slide-out {
+    animation: slideOut 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.category-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.btn-close-panel {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #ff0000;
+    transition: transform 0.2s ease, color 0.2s;
+}
+
+.btn-close-panel:hover {
+    color: #495057;
+}
+
+.category-select-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-add-category {
+    background-color: #3a86ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.btn-add-category:hover {
+    background-color: #2667cc;
+    transform: scale(1.05);
+}
+
+.color-picker {
+    height: 40px;
+    padding: 5px;
+    max-width: 320px;
+}
+
+.btn-create-category {
+    background-color: #3a86ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-create-category:hover {
+    background-color: #2667cc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@keyframes successPulse {
+    0% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(58, 134, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(58, 134, 255, 0); }
+}
+
+.success-animation {
+    animation: successPulse 1s ease;
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.error-animation {
+    animation: errorShake 0.5s ease;
+}
+
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-preview {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #3a86ff;
+    transition: transform 0.3s ease;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
