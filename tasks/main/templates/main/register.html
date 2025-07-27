@@ -27,6 +27,7 @@
                 <input
                     type="text"
                     name="username"
+                    placeholder="Введите имя"
                     value="{{ form.username.value|default:'' }}"
                     class="form-control {% if field_errors.username %}error-field{% endif %}"
                 >
@@ -44,6 +45,7 @@
                 <input
                     type="email"
                     name="email"
+                    placeholder="Введите email"
                     value="{{ form.email.value|default:'' }}"
                     class="form-control {% if field_errors.email %}error-field{% endif %}"
                 >
@@ -61,6 +63,7 @@
                 <input
                     type="password"
                     name="password"
+                    placeholder="Введите пароль"
                     class="form-control {% if field_errors.password %}error-field{% endif %}"
                 >
                 {% if field_errors.password %}
@@ -77,6 +80,7 @@
                 <input
                     type="password"
                     name="password_confirm"
+                    placeholder="Подтвердите пароль"
                     class="form-control {% if field_errors.password_confirm %}error-field{% endif %}"
                 >
                 {% if field_errors.password_confirm %}

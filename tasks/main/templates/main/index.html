@@ -7,16 +7,138 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'main/css/index.css' %}">
 <link rel="stylesheet" href="{% static 'main/css/search.css' %}">
-    <h1>tasdfasdfasota</h1>
-    {% if priorities %}
-        {% for el in priorities %}
-            <div>
-                <h3>{{ el.name }}</h3>
-                <p>{{ el.weight }}</p>
+<div class="hero-section">
+    <div class="container">
+        <h1>Добро пожаловать в TaskFlow</h1>
+        <p class="subtitle">Ваш идеальный помощник для управления задачами</p>
+        <div class="cta-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks' %}" class="btn btn-primary">Мои задачи</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary">Начать бесплатно</a>
+                <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Как TaskFlow поможет вам</h2>
+
+        <div class="feature animate-on-scroll">
+            <div class="feature-content">
+                <h3>Организация задач</h3>
+                <p>Создавайте, редактируйте и удаляйте задачи с удобным интерфейсом. Присваивайте категории, приоритеты и статусы для лучшей организации.</p>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No data!&!</p>
-    {% endif %}
+            <div class="feature-icon">📝</div>
+        </div>
+
+        <div class="feature animate-on-scroll">
+            <div class="feature-icon">🗓️</div>
+            <div class="feature-content">
+                <h3>Календарное планирование</h3>
+                <p>Просматривайте свои задачи в календаре. Управляйте дедлайнами и планируйте свое время эффективно.</p>
+            </div>
+        </div>
+
+        <div class="feature animate-on-scroll">
+            <div class="feature-content">
+                <h3>Категории и теги</h3>
+                <p>Создавайте собственные категории с цветовыми метками для быстрой визуальной идентификации задач.</p>
+            </div>
+            <div class="feature-icon">🏷️</div>
+        </div>
+
+        <div class="feature animate-on-scroll">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-content">
+                <h3>Мощный поиск</h3>
+                <p>Находите задачи и категории по ключевым словам. Интеллектуальная система поиска поможет быстро найти нужную информацию.</p>
+            </div>
+        </div>
+
+        <div class="feature animate-on-scroll">
+            <div class="feature-content">
+                <h3>Управление профилем</h3>
+                <p>Настраивайте свой аккаунт: меняйте имя пользователя, email и пароль в любое время.</p>
+            </div>
+            <div class="feature-icon">👤</div>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">Как начать работать с TaskFlow</h2>
+
+        <div class="steps">
+            <div class="step animate-on-scroll">
+                <div class="step-number">1</div>
+                <h3>Создайте аккаунт</h3>
+                <p>Зарегистрируйтесь бесплатно и получите доступ ко всем функциям</p>
+            </div>
+
+            <div class="step animate-on-scroll">
+                <div class="step-number">2</div>
+                <h3>Добавьте задачи</h3>
+                <p>Начните с создания своих первых задач с указанием сроков выполнения</p>
+            </div>
+
+            <div class="step animate-on-scroll">
+                <div class="step-number">3</div>
+                <h3>Организуйте</h3>
+                <p>Создайте категории и назначьте их задачам для лучшей организации</p>
+            </div>
+
+            <div class="step animate-on-scroll">
+                <div class="step-number">4</div>
+                <h3>Следите за прогрессом</h3>
+                <p>Используйте календарь и фильтры для отслеживания своего прогресса</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonials">
+    <div class="container">
+        <h2 class="section-title">Отзывы пользователей</h2>
+
+        <div class="testimonial-cards">
+            <div class="testimonial animate-on-scroll">
+                <div class="quote">"TaskFlow полностью изменил мой подход к организации задач. Теперь я всегда знаю, что нужно сделать и когда!"</div>
+                <div class="author">— Алексей, менеджер проектов</div>
+            </div>
+
+            <div class="testimonial animate-on-scroll">
+                <div class="quote">"Простой и интуитивно понятный интерфейс. Особенно нравится система категорий и календарь."</div>
+                <div class="author">— Мария, дизайнер</div>
+            </div>
+
+            <div class="testimonial animate-on-scroll">
+                <div class="quote">"Идеальный инструмент для студентов. Помогает не пропускать дедлайны и держать все задачи в порядке."</div>
+                <div class="author">— Дмитрий, студент</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Готовы начать?</h2>
+        <p>Присоединяйтесь к тысячам пользователей, которые уже управляют своими задачами с помощью TaskFlow</p>
+        <div class="cta-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'tasks' %}" class="btn btn-large btn-primary">Перейти к задачам</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-large btn-primary">Создать аккаунт</a>
+                <a href="{% url 'login' %}" class="btn btn-large btn-secondary">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'main/js/index.js' %}"></script>
 {% endblock %}
