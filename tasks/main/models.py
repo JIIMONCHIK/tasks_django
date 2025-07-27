@@ -48,6 +48,10 @@ class Categories(models.Model):
     def __str__(self):
         return self.name
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._meta.get_field('name').db_index = True
+
     @property
     def tasks_count(self):
         return self.tasks_set.count()
@@ -91,6 +95,11 @@ class Tasks(models.Model):
 
     def __str__(self):
         return self.title
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._meta.get_field('title').db_index = True
+        self._meta.get_field('description').db_index = True
 
     @property
     def is_completed(self):

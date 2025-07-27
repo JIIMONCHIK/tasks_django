@@ -32,5 +32,6 @@ urlpatterns = [
     path('get-category/<int:category_id>/', views.get_category, name='get_category'),
     path('update-category/', views.update_category, name='update_category'),
     path('delete-category/<int:category_id>/', views.delete_category, name='delete_category'),
+    path('search/autocomplete/', views.search_autocomplete, name='search_autocomplete'),
     path('favicon.ico', views.favicon_view),
 ]

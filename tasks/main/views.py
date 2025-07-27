@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Case, When, Value, BooleanField, Q
 import json
+from django.views.generic import ListView
 
 
 def register_view(request):
@@ -87,7 +88,7 @@ def logout_view(request):
 def create_category(request):
     if request.method == 'POST':
         name = request.POST.get('name')
-        color_code = request.POST.get('color_code', '#ffffff')  # Белый по умолчанию
+        color_code = request.POST.get('color_code', '#ffffff')
 
         if not name:
             return JsonResponse({
@@ -132,7 +133,6 @@ def get_category(request, category_id):
 def update_category(request):
     if request.method == 'POST':
         try:
-            # Используем request.POST вместо request.body
             category_id = request.POST.get('category_id')
             name = request.POST.get('name')
             color_code = request.POST.get('color_code')
@@ -337,6 +337,50 @@ def categories_view(request):
         'categories': categories
     }
     return render(request, 'main/categories.html', context)
+
+
+@login_required(login_url='login')
+def search_autocomplete(request):
+    query = request.GET.get('q', '').strip()
+    results = []
+
+    if query:
+        # Поиск задач
+        tasks = Tasks.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query),
+            user=request.user
+        )[:5]
+
+        for task in tasks:
+            results.append({
+                'type': 'task',
+                'id': task.id,
+                'title': task.title,
+                'description': task.description[:100] + '...' if task.description else '',
+                'url': f"/tasks?highlight={task.id}#task-{task.id}",
+                'category_name': task.category.name if task.category else None,
+                'category_color': task.category.color_code if task.category else "#cccccc",
+                'due_date': task.due_date.strftime("%d.%m.%Y") if task.due_date else None
+            })
+
+        # Поиск категорий
+        categories = Categories.objects.filter(
+            Q(name__icontains=query),
+            user=request.user
+        )[:5]
+
+        for category in categories:
+            results.append({
+                'type': 'category',
+                'id': category.id,
+                'title': category.name,
+                'url': f"/categories?highlight={category.id}#category-{category.id}",
+                'color_code': category.color_code,
+                'tasks_count': category.tasks_count
+            })
+
+    return JsonResponse({'results': results})
 
 
 def favicon_view(request):

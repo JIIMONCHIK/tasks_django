@@ -8,6 +8,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryCards = document.querySelectorAll('.category-card');
     const colorPicker = document.getElementById('category-color');
     const colorPreview = document.getElementById('color-preview');
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('highlight');
+
+    if (categoryId) {
+        setTimeout(() => {
+            const categoryElement = document.getElementById(`category-${categoryId}`);
+            if (categoryElement) {
+                // Прокрутка к категории
+                categoryElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                });
+
+                // Анимация выделения
+                categoryElement.style.animation = 'highlight 2s ease';
+
+                // Удаление анимации через 2 секунды
+                setTimeout(() => {
+                    categoryElement.style.animation = '';
+                }, 2000);
+            }
+        }, 300);
+    }
 
     // Инициализация цветового превью
     if (colorPicker && colorPreview) {

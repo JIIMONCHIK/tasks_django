@@ -7,6 +7,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'main/css/categories_view.css' %}">
+<link rel="stylesheet" href="{% static 'main/css/search.css' %}">
 <script src="{% static 'main/js/categories_view.js' %}"></script>
 
 <div class="categories-container">
@@ -17,7 +18,8 @@
 
     <div class="categories-list">
         {% for category in categories %}
-        <div class="category-card" style="--category-color: {{ category.color_code }};" data-category-id="{{ category.id }}">
+        <div id="category-{{ category.id }}" class="category-card {% if request.GET.highlight == category.id|stringformat:'i' %}category-highlight{% endif %}"
+             style="--category-color: {{ category.color_code }};" data-category-id="{{ category.id }}">
             <div class="category-info">
                 <h3>{{ category.name }}</h3>
                 <div class="category-actions">

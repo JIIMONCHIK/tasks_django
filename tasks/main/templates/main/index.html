@@ -1,10 +1,13 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
 
 {% block title %}
 {{ title }}
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'main/css/search.css' %}">
     <h1>tasdfasdfasota</h1>
     {% if priorities %}
         {% for el in priorities %}

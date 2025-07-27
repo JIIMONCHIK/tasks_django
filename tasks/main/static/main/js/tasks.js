@@ -26,8 +26,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const filterTypes = ['category', 'priority', 'status'];
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('highlight');
+
     initFiltersFromUrl(); // Инициализируем чекбоксы
     updateFilterIndicator();
+
+     if (taskId) {
+        setTimeout(() => {
+            const taskElement = document.getElementById(`task-${taskId}`);
+            if (taskElement) {
+                // Прокрутка к задаче
+                taskElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                });
+
+                // Анимация выделения
+                taskElement.style.animation = 'highlight 2s ease';
+
+                // Удаление анимации через 2 секунды
+                setTimeout(() => {
+                    taskElement.style.animation = '';
+                }, 2000);
+            }
+        }, 300);
+    }
 
     if (colorPicker && colorPreview) {
         colorPreview.style.backgroundColor = colorPicker.value;
