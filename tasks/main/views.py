@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Case, When, Value, BooleanField, Q
 import json
-from django.views.generic import ListView
+from datetime import datetime
 
 
 def register_view(request):
@@ -381,6 +381,63 @@ def search_autocomplete(request):
             })
 
     return JsonResponse({'results': results})
+
+
+@login_required(login_url='login')
+def calendar_view(request):
+    return render(request, 'main/calendar.html')
+
+
+@login_required(login_url='login')
+def calendar_events(request):
+    # Получаем задачи пользователя только с due_date
+    tasks = Tasks.objects.filter(
+        user=request.user,
+        due_date__isnull=False
+    ).select_related('category')
+
+    events = []
+    for task in tasks:
+        # Добавляем только события по дате дедлайна
+        events.append({
+            'id': task.id,
+            'title': task.title,
+            'start': task.due_date.isoformat(),
+            'extendedProps': {
+                'category_color': task.category.color_code if task.category else None,
+                'category_name': task.category.name if task.category else None
+            }
+        })
+
+    return JsonResponse(events, safe=False)
+
+
+@login_required(login_url='login')
+def day_tasks(request):
+    date_str = request.GET.get('date')
+    if not date_str:
+        return JsonResponse([], safe=False)
+
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse([], safe=False)
+
+    tasks = Tasks.objects.filter(
+        user=request.user,
+        due_date=date
+    ).select_related('category')
+
+    tasks_data = []
+    for task in tasks:
+        tasks_data.append({
+            'id': task.id,
+            'title': task.title,
+            'category_name': task.category.name if task.category else None,
+            'category_color': task.category.color_code if task.category else None
+        })
+
+    return JsonResponse(tasks_data, safe=False)
 
 
 def favicon_view(request):

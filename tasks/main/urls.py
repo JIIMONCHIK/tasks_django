@@ -33,5 +33,8 @@ urlpatterns = [
     path('update-category/', views.update_category, name='update_category'),
     path('delete-category/<int:category_id>/', views.delete_category, name='delete_category'),
     path('search/autocomplete/', views.search_autocomplete, name='search_autocomplete'),
+    path('calendar', views.calendar_view, name='calendar'),
+    path('calendar/events/', views.calendar_events, name='calendar_events'),
+    path('calendar/day-tasks/', views.day_tasks, name='day_tasks'),
     path('favicon.ico', views.favicon_view),
 ]
