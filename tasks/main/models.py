@@ -19,6 +19,11 @@ class UsersManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password, **extra_fields)
 
+    def change_password(self, user, new_password):
+        user.set_password(new_password)
+        user.save()
+        return user
+
 
 class Users(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(unique=True, max_length=50)
@@ -35,6 +40,10 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def set_new_password(self, new_password):
+        self.set_password(new_password)
+        self.save()
 
     class Meta:
         db_table = 'users'

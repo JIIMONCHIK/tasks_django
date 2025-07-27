@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from .models import *
-from .forms import TaskForm, UserRegistrationForm, UserLoginForm
-from django.contrib.auth import login, authenticate, logout
+from .forms import TaskForm, UserRegistrationForm, UserLoginForm, ProfileForm
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Case, When, Value, BooleanField, Q
@@ -341,6 +341,9 @@ def categories_view(request):
 
 @login_required(login_url='login')
 def search_autocomplete(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'results': []})
+
     query = request.GET.get('q', '').strip()
     results = []
 
@@ -438,6 +441,22 @@ def day_tasks(request):
         })
 
     return JsonResponse(tasks_data, safe=False)
+
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            # Обновляем сессию, если менялся пароль
+            if form.cleaned_data.get('new_password'):
+                update_session_auth_hash(request, request.user)
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user)
+
+    return render(request, 'main/profile.html', {'form': form})
 
 
 def favicon_view(request):

@@ -36,5 +36,6 @@ urlpatterns = [
     path('calendar', views.calendar_view, name='calendar'),
     path('calendar/events/', views.calendar_events, name='calendar_events'),
     path('calendar/day-tasks/', views.day_tasks, name='day_tasks'),
+    path('profile/', views.profile_view, name='profile'),
     path('favicon.ico', views.favicon_view),
 ]

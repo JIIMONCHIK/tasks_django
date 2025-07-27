@@ -19,9 +19,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         debounceTimer = setTimeout(() => {
             fetch(`/search/autocomplete/?q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
+                .then(response => {
+                    // Проверяем статус ответа
+                    if (response.status === 302) {
+                        // Перенаправление на страницу входа
+                        window.location.href = '/login';
+                        return;
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    displayResults(data.results);
+                    if (data && data.results) {
+                        displayResults(data.results);
+                    } else {
+                        searchResults.innerHTML = '<div class="search-no-results">Для поиска войдите в систему</div>';
+                    }
                 })
                 .catch(error => {
                     console.error('Search error:', error);

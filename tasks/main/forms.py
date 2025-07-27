@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 
 class UserRegistrationForm(f.ModelForm):
     password = f.CharField(widget=f.PasswordInput)
-    password_confirm = f.CharField(widget=f.PasswordInput, label='Confirm Password')
+    password_confirm = f.CharField(widget=f.PasswordInput, label='Подтвердите пароль')
 
     class Meta:
         model = Users
@@ -17,7 +17,7 @@ class UserRegistrationForm(f.ModelForm):
         password_confirm = cleaned_data.get("password_confirm")
 
         if password and password_confirm and password != password_confirm:
-            self.add_error('password_confirm', "Passwords do not match")
+            self.add_error('password_confirm', "Пароли не совпадают")
 
         return cleaned_data
 
@@ -111,3 +111,58 @@ class CategoryForm(f.Form):
             "value": "#3a86ff"
         })
     )
+
+
+class ProfileForm(f.ModelForm):
+    new_password = f.CharField(
+        label="Новый пароль",
+        widget=f.PasswordInput(attrs={
+            "placeholder": "Введите новый пароль",
+            "autocomplete": "new-password"
+        }),
+        required=False,
+        help_text="Оставьте пустым, если не хотите менять пароль"
+    )
+    confirm_password = f.CharField(
+        label="Подтвердите пароль",
+        widget=f.PasswordInput(attrs={
+            "placeholder": "Повторите новый пароль",
+            "autocomplete": "new-password"
+        }),
+        required=False
+    )
+
+    class Meta:
+        model = Users
+        fields = ['username', 'email']
+        widgets = {
+            'username': f.TextInput(attrs={'placeholder': 'Ваше имя'}),
+            'email': f.EmailInput(attrs={'placeholder': 'Ваш email'})
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        # Проверка совпадения паролей
+        if new_password and new_password != confirm_password:
+            self.add_error('confirm_password', "Пароли не совпадают")
+
+        # Базовая проверка сложности пароля
+        if new_password and len(new_password) < 8:
+            self.add_error('new_password', "Пароль должен содержать минимум 8 символов")
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        new_password = self.cleaned_data.get("new_password")
+
+        if new_password:
+            user.set_password(new_password)
+
+        if commit:
+            user.save()
+
+        return user

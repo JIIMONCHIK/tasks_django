@@ -30,8 +30,12 @@
                 </a>
 
                 <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="🔍 Поиск задач..." autocomplete="off">
-                    <div id="search-results" class="search-results"></div>
+                    {% if user.is_authenticated %}
+                        <input type="text" id="search-input" placeholder="🔍 Поиск задач..." autocomplete="off">
+                        <div id="search-results" class="search-results"></div>
+                    {% else %}
+                        <input type="text" placeholder="🔍 Для поиска войдите в систему" disabled>
+                    {% endif %}
                 </div>
 
                 {% if user.is_authenticated %}
@@ -39,7 +43,7 @@
                     <div class="avatar">{{ user.username|first }}</div>
                     <span class="username">{{ user.username }}</span>
                     <div class="dropdown">
-                        <a href="#">Профиль</a>
+                        <a href="{% url 'profile' %}">Профиль</a>
                         <a href="{% url 'logout' %}">Выйти</a>
                     </div>
                 </div>
