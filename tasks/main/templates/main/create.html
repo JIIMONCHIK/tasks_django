@@ -1,0 +1,105 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+<script src="{% static 'main/js/task_form.js' %}"></script>
+<script src="{% static 'main/js/categories.js' %}"></script>
+<link rel="stylesheet" href="{% static 'main/css/categories.css' %}">
+<link rel="stylesheet" href="{% static 'main/css/search.css' %}">
+
+<div class="task-form-container">
+    <div class="task-form">
+        <h1 class="text-center mb-4">Создать новую задачу</h1>
+        <form method="post" id="task-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+
+            <div class="form-group">
+                {{ form.description }}
+                {{ form.description.errors }}
+            </div>
+
+            <div class="date-section">
+                <div class="date-group">
+                    <div class="form-group">
+                        <label class="form-label">Дата начала</label>
+                        <div class="date-fields">
+                            {{ form.start_date }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Срок выполнения</label>
+                        <div class="date-fields">
+                            {{ form.due_date }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="select-group">
+                <div class="form-group">
+                    {{ form.priority }}
+                    {{ form.priority.errors }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.status }}
+                    {{ form.status.errors }}
+                </div>
+
+                <div class="form-group category-group">
+                    <div class="category-select-container">
+                        {{ form.category }}
+                        <button type="button" class="btn-add-category" id="btn-add-category">
+                            +
+                        </button>
+                    </div>
+                    {{ form.category.errors }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Создать задачу</button>
+
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Панель создания категории -->
+    <div class="category-panel" id="category-panel">
+        <div class="category-panel-header">
+            <h3>Создать новую категорию</h3>
+            <button type="button" class="btn-close-panel" id="btn-close-panel">
+                Закрыть
+            </button>
+        </div>
+        <form id="category-form">
+            <div class="form-group">
+                <label>Название категории</label>
+                <input type="text" name="name" class="form-control" placeholder="Работа, Дом, Учеба..." required>
+                <div class="error-message" id="name-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Цвет</label>
+                <div class="color-picker-container">
+                    <input type="color" name="color_code" class="form-control color-picker" value="#3a86ff">
+                    <span class="color-preview" id="color-preview"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-create-category">Создать категорию</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

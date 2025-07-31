@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/styles.css' %}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <a href="{% url 'index' %}" class="logo">
+                    <div class="logo-icon">✓</div>
+                    <span class="logo-text">TaskFlow</span>
+                </a>
+            </div>
+
+            <nav>
+                <ul class="nav-links">
+                    <li class="nav-link"><a href="{% url 'tasks' %}" class="{% if request.resolver_match.url_name == 'tasks' %}active{% endif %}">Задачи</a></li>
+                    <li class="nav-link"><a href="{% url 'categories' %}" class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}">Категории</a></li>
+                    <li class="nav-link"><a href="{% url 'calendar' %}" class="{% if request.resolver_match.url_name == 'calendar' %}active{% endif %}">Календарь</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="{% if user.is_authenticated %}{% url 'create' %}{% else %}{% url 'login' %}?next={% url 'create' %}{% endif %}" >
+                    <button class="btn btn-primary">+ Новая задача</button>
+                </a>
+
+                <div class="search-bar">
+                    {% if user.is_authenticated %}
+                        <input type="text" id="search-input" placeholder="🔍 Поиск задач..." autocomplete="off">
+                        <div id="search-results" class="search-results"></div>
+                    {% else %}
+                        <input type="text" placeholder="🔍 Для поиска войдите в систему" disabled>
+                    {% endif %}
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="user-profile">
+                    <div class="avatar">{{ user.username|first }}</div>
+                    <span class="username">{{ user.username }}</span>
+                    <div class="dropdown">
+                        <a href="{% url 'profile' %}">Профиль</a>
+                        <a href="{% url 'logout' %}">Выйти</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="btn btn-primary">Войти</button>
+                    </a>
+                </div>
+                {% endif %}
+
+                <button class="mobile-menu-btn">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <script src="{% static 'main/js/search.js' %}"></script>
+    {% block content %}{% endblock %}
+</body>
+</html>

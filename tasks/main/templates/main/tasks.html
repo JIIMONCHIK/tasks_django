@@ -1,0 +1,227 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'main/css/tasks.css' %}">
+<link rel="stylesheet" href="{% static 'main/css/search.css' %}">
+<script src="{% static 'main/js/tasks.js' %}"></script>
+
+<div class="tasks-container">
+    <div class="tasks-header">
+        <h1>Мои задачи</h1>
+        
+        <div class="tasks-controls">
+            <div class="sort-options">
+                <span>Сортировка:</span>
+                <select id="sort-select">
+                    <option value="due_date" {% if sort_by == 'due_date' %}selected{% endif %}>По сроку выполнения</option>
+                    <option value="created" {% if sort_by == 'created' %}selected{% endif %}>Последние созданные</option>
+                    <option value="status" {% if sort_by == 'status' %}selected{% endif %}>По статусу</option>
+                    <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>По приоритету</option>
+                    <option value="category" {% if sort_by == 'category' %}selected{% endif %}>По категории</option>
+                </select>
+            </div>
+            
+            <div class="filter-options">
+                <button class="filter-btn" id="filter-btn">Фильтры</button>
+                <div class="filter-dropdown" id="filter-dropdown">
+                    <div class="filter-section">
+                        <h4>Статус</h4>
+                        {% for status in statuses %}
+                        <label>
+                            <input type="checkbox" name="filter_status" value="{{ status.id }}">
+                            {{ status.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="filter-section">
+                        <h4>Приоритет</h4>
+                        {% for priority in priorities %}
+                        <label>
+                            <input type="checkbox" name="filter_priority" value="{{ priority.id }}">
+                            {{ priority.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="filter-section">
+                        <h4>Категория</h4>
+                        {% for category in categories %}
+                        <label>
+                            <input type="checkbox" name="filter_category" value="{{ category.id }}">
+                            <span class="color-dot" style="background-color: {{ category.color_code }}"></span>
+                            {{ category.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-secondary" id="apply-filters">Применить</button>
+                        <button class="btn btn-link" id="reset-filters">Сбросить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tasks-list">
+        {% for task in tasks %}
+        <div id="task-{{ task.id }}"  class="task-card
+                  {% if task.status.is_completed %}task-completed{% endif %} {% if request.GET.highlight == task.id|stringformat:'i' %}task-highlight{% endif %}"
+             style="border-left: 5px solid {% if task.category %}{{ task.category.color_code }}{% else %}#f0f0f0{% endif %};"
+             data-task-id="{{ task.id }}">
+            <div class="task-header">
+                <div>
+                    <h3>{{ task.title }}</h3>
+                    <span class="task-date">{{ task.start_date|date:"d M Y" }}</span>
+                </div>
+                {% if task.category %}
+                <span class="task-category" style="background-color: {{ task.category.color_code }}20; border-color: {{ task.category.color_code }}">
+                    {{ task.category.name }}
+                </span>
+                {% endif %}
+            </div>
+            
+            <div class="task-body">
+                <p>{{ task.description|truncatechars:120 }}</p>
+            </div>
+            
+            <div class="task-footer">
+                <div class="task-due">
+                    <i class="far fa-calendar-alt"></i>
+                    {% if task.due_date %}
+                    <span class="{% if task.due_date < today %}task-overdue{% endif %}">
+                        {{ task.due_date|date:"d M Y" }}
+                    </span>
+                    {% else %}
+                    <span>Без срока</span>
+                    {% endif %}
+                </div>
+                
+                <div class="task-status-badge">
+                    {% if task.priority %}
+                    <span class="priority-badge priority-{{ task.priority.weight }}">
+                        {{ task.priority.name }}
+                    </span>
+                    {% endif %}
+
+                    {% if task.status %}
+                    <span class="status-badge status-{{ task.status.id }}">
+                        {{ task.status.name }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div class="no-tasks">
+                {% if has_tasks %}
+                    <p>Ни одна задача не соответствует выбранным фильтрам.</p>
+                    <button class="btn btn-link" id="clear-filters-btn">Сбросить фильтры</button>
+                {% else %}
+                    <p>У вас пока нет задач. Создайте первую!</p>
+                    <a href="{% url 'create' %}" class="btn btn-primary">
+                        Создать задачу
+                    </a>
+                {% endif %}
+            </div>
+
+
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования задачи -->
+<div class="modal" id="task-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Редактирование задачи</h2>
+        <form id="task-edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="task_id" id="task-id">
+            
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" name="title" id="task-title" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea name="description" id="task-description" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Срок выполнения</label>
+                <input type="date" name="due_date" id="task-due-date" class="form-control">
+            </div>
+            
+            <div class="form-group category-group">
+                <label>Категория</label>
+                <div class="category-select-container">
+                    <select name="category" id="task-category" class="form-control">
+                        <option value="">Без категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn-add-category" id="btn-add-category">
+                            +
+                        </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Приоритет</label>
+                <select name="priority" id="task-priority" class="form-control">
+                    {% for priority in priorities %}
+                    <option value="{{ priority.id }}">{{ priority.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Статус</label>
+                <select name="status" id="task-status" class="form-control">
+                    {% for status in statuses %}
+                    <option value="{{ status.id }}">{{ status.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-danger" id="delete-task">Удалить</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Панель создания категории -->
+    <div class="category-panel" id="category-panel">
+        <div class="category-panel-header">
+            <h3>Создать новую категорию</h3>
+            <button type="button" class="btn-close-panel" id="btn-close-panel">
+                Закрыть
+            </button>
+        </div>
+        <form id="category-form">
+            <div class="form-group">
+                <label>Название категории</label>
+                <input type="text" name="name" class="form-control" placeholder="Работа, Дом, Учеба..." required>
+                <div class="error-message" id="name-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Цвет</label>
+                <div class="color-picker-container">
+                    <input type="color" name="color_code" class="form-control color-picker" value="#3a86ff">
+                    <span class="color-preview" id="color-preview"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-create-category">Создать категорию</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

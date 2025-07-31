@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Календарь{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'main/css/calendar.css' %}">
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet'>
+<link rel="stylesheet" href="{% static 'main/css/search.css' %}">
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales/ru.min.js'></script>
+<script src="{% static 'main/js/calendar.js' %}"></script>
+
+<div class="calendar-container">
+    <h1>Календарь задач</h1>
+    <div id="calendar"></div>
+</div>
+
+<!-- Модальное окно для задач дня -->
+<div class="modal" id="dayTasksModal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modal-day-title"></h2>
+        <div id="tasks-list" class="tasks-list"></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'main/css/login.css' %}">
+<div class="auth-container">
+    <div class="auth-form">
+        <h2 class="text-center mb-4">Регистрация</h2>
+
+        {% if error %}
+            <div class="error-box">
+                {{ error }}
+            </div>
+        {% endif %}
+
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="form-group-reg">
+                <label>Имя пользователя</label>
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Введите имя"
+                    value="{{ form.username.value|default:'' }}"
+                    class="form-control {% if field_errors.username %}error-field{% endif %}"
+                >
+                {% if field_errors.username %}
+                    <div class="error-message">
+                        {% for err in field_errors.username %}
+                            {{ err }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group-reg">
+                <label>Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Введите email"
+                    value="{{ form.email.value|default:'' }}"
+                    class="form-control {% if field_errors.email %}error-field{% endif %}"
+                >
+                {% if field_errors.email %}
+                    <div class="error-message">
+                        {% for err in field_errors.email %}
+                            {{ err }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group-reg">
+                <label>Пароль</label>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    class="form-control {% if field_errors.password %}error-field{% endif %}"
+                >
+                {% if field_errors.password %}
+                    <div class="error-message">
+                        {% for err in field_errors.password %}
+                            {{ err }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group-reg">
+                <label>Подтвердите пароль</label>
+                <input
+                    type="password"
+                    name="password_confirm"
+                    placeholder="Подтвердите пароль"
+                    class="form-control {% if field_errors.password_confirm %}error-field{% endif %}"
+                >
+                {% if field_errors.password_confirm %}
+                    <div class="error-message">
+                        {% for err in field_errors.password_confirm %}
+                            {{ err }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+            <div class="text-center mt-3">
+                <a href="{% url 'login' %}">Уже есть аккаунт? Войти</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
